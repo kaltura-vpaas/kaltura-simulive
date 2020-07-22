@@ -78,6 +78,7 @@
           "autoMute": false,
           "autoPlay": true,
           "loop": true,
+          "mediaProxy.mediaPlayFrom": getSyncPlaybackTime();
           "scrubber": {
             "plugin": "false"
           }
@@ -87,25 +88,20 @@
     
       kWidget.addReadyCallback( function(playerId) {
         var kdp = document.getElementById(playerId);
-
-        // Sync to appropriate time of the video.
-        function syncPlayback() {
-          var d = new Date();
-          var n = d.getTime();
-          var startSeconds = (60*60*d.getHours() + 60*d.getMinutes() + d.getSeconds()) % entryDuration;
-
-          // Seek to startSeconds from the start of the video.
-          kdp.sendNotification("doSeek", startSeconds);
-        }
-
-        kdp.kBind('mediaReady', function() {
-          syncPlayback();
-        })
-
         kdp.kBind('userInitiatedPlay', function() {
-          syncPlayback();
+          var startSeconds = getSyncPlaybackTime();
+          // Seek to startSeconds from the start of the video.
+          kdp.sendNotification("doSeek", startSeconds);   
         })
       });
+      
+      // Sync to appropriate time of the video.
+      function getSyncPlaybackTime() {
+        var d = new Date();
+        var n = d.getTime();
+        var startSeconds = (60*60*d.getHours() + 60*d.getMinutes() + d.getSeconds()) % entryDuration;
+        return startSeconds;
+      }
     </script>
   </body>
 </html>
