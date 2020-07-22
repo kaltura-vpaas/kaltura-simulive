@@ -78,7 +78,7 @@
           "autoMute": false,
           "autoPlay": true,
           "loop": true,
-          "mediaProxy.mediaPlayFrom": getSyncPlaybackTime();
+          "mediaProxy.mediaPlayFrom": getSyncPlaybackTime(),
           "scrubber": {
             "plugin": "false"
           }
@@ -92,7 +92,7 @@
           var startSeconds = getSyncPlaybackTime();
           // Seek to startSeconds from the start of the video.
           kdp.sendNotification("doSeek", startSeconds);   
-        })
+        });
       });
       
       // Sync to appropriate time of the video.
