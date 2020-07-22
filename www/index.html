@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Kaltura Connect</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- KMS has Bootstrap 2.3 -->
+    <link href="https://stackpath.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet" integrity="sha384-4FeI0trTH/PCsLWrGCD1mScoFu9Jf2NdknFdFoJhXZFwsvzZ3Bo5sAh7+zL8Xgnd" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js" integrity="sha384-vOWIrgFbxIPzY09VArRHMsxned7WiY6hzIPtAIIeTFuii9y3Cr6HE6fcHXy5CFhc" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnapisec.kaltura.com/p/939341/embedPlaykitJs/uiconf_id/44934512"></script>
+  </head>
+  <body style="background-color: #404040">
+    <style>
+      #kaltura_player,
+      #kaltura_player object,
+      #kaltura_player embed,
+      #kaltura_player iframe {
+        background: #000;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .wrapper-video {
+        overflow: hidden;
+        position: absolute;
+        top: 0%;
+        bottom: 0%;
+        left: 0%;
+        right: 0%;
+      }
+      img {
+        border: 2px solid black;
+        position: fixed; 
+        top: 0; 
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      #container {
+        position: relative;    
+      }
+      #kpcontainer {
+        position: fixed;
+        top: 32%;
+        bottom: 5%;
+        left: 18%;
+        right: 18%;
+        padding: 0px;
+        background-color: #4f4c4c;
+        border: 2px solid #4f4c4c;
+      }
+    </style>
+    <br/>
+    <div id="container">
+      <img src="./images/kalturaconnect.png">
+      <div id="kpcontainer">
+        <div class="wrapper-video">
+          <div id="kaltura_player">
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      // Entry and player info.
+      const entryId = "1_sl34jsxr";
+      const entryDuration = 42*60+17; // 42 minute 17 second period (in seconds)
+      const pid = 939341; // partner Id
+      const playerUiConfId = 44934512;
+
+      try {
+        var d = new Date();
+        var n = d.getTime();
+        var startSeconds = (60*60*d.getHours() + 60*d.getMinutes() + d.getSeconds()) % entryDuration;
+
+        let kalturaPlayer = KalturaPlayer.setup({
+          targetId: "kaltura_player",
+          provider: {
+            partnerId: pid,
+            uiConfId: playerUiConfId
+          },
+          playback: {
+            autoplay: true,
+            muted: false,
+            startTime: startSeconds
+          }
+        });
+        kalturaPlayer.configure({sources:{type:"Live"}}); // hide scrubber and add live image
+        kalturaPlayer.loadMedia({entryId: entryId});
+
+        // Sync to appropriate time of the video.
+        function syncPlayback() {
+          var d = new Date();
+          var n = d.getTime();
+          var startSeconds = (60*60*d.getHours() + 60*d.getMinutes() + d.getSeconds()) % entryDuration;
+
+          // Seek to startSeconds from the start of the video.
+          kalturaPlayer.currentTime = startSeconds;
+        }
+
+        // Video started playing (initial load or play button pressed)
+        kalturaPlayer.addEventListener("play", event => {
+          syncPlayback();
+        });
+
+        // Video ended - restart.
+        kalturaPlayer.addEventListener("ended", event => {
+          console.log("Video ended.");
+          kalturaPlayer.currentTime = 0;
+        });
+      } catch (e) {
+        console.error(e.message)
+      }
+    </script>
+  </body>
+</html>
